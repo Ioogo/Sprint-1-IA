@@ -72,3 +72,29 @@ Usuário: "O tempo estimado de carga aumentou, o sistema está com erro?"
 Implementar o chatbot planejado na Sprint 1, com modelo de IA configurado com contexto para o problema da GoodWe.
 Entregar o chatbot funcional rodando em Google Colab ou IDE de preferência do grupo, com interface de interação demonstrável.
 Validar o funcionamento do chatbot utilizando o modelo de teste elaborado na Sprint 1.
+
+#Mudanças
+
+Com base nos feedbacks recebidos na avaliação da Sprint 1, a arquitetura de software e as diretrizes do modelo de Inteligência Artificial do ChargeGrid Intelligence foram reestruturadas para mitigar dois problemas críticos de sistemas baseados em LLM: vazamento de dados privados (falta de separação de personas) e alucinações técnicas.
+
+Abaixo estão detalhadas as dúvidas apontadas e as respectivas soluções implementadas no protótipo funcional da Sprint 2:
+
+#1. Diferenciação de Personas e Níveis de Acesso
+**Feedback:** O chatbot atenderá duas personas muito diferentes (Operador Comercial e Usuário Final). Como ele irá diferenciar as necessidades? O usuário final poderia ter acesso a informações do operador?
+
+**Solução Implementada:** Desenvolvemos um mecanismo de Segregação de Contexto Baseado em Funções (Role-Based Context) na camada da aplicação do painel. Na interface gráfica (Gradio), inseriu-se um seletor dinâmico que simula a identidade autenticada da sessão.
+
+Quando a sessão é definida como [ROLE: USER] (Usuário Final / Motorista), as diretrizes de segurança do System Prompt realizam um bloqueio categórico de dados. O modelo é instruído de forma estrita a recusar qualquer questionamento sobre o faturamento total acumulado do totem, limites internos de corrente da rede ou registradores industriais Modbus.
+
+Quando a sessão é definida como [ROLE: OPERATOR] (Operador Comercial), o modelo tem o privilégio de leitura liberado, respondendo com precisão sobre os dados gerenciais de arrecadação do eletroposto (ex: simulação de faturamento de R$ 450,00) e parâmetros de engenharia do disjuntor principal.
+
+#2. Blindagem e Ancoragem do RAG (Anti-Alucinação)
+**Feedback:** Faltaram instruções no System Prompt para que o modelo utilize apenas as informações contidas nos documentos fornecidos.
+
+**Solução Implementada:** O System Prompt foi completamente refatorado para incluir técnicas avançadas de Grounding (Ancoragem de Veracidade). Adicionamos três cláusulas imperativas na instrução do sistema do Gemini 1.5 Flash:
+
+Fidelidade Exclusiva: O modelo foi proibido de usar conhecimento prévio do seu treinamento que esteja fora da base técnica fornecida.
+
+Tratamento de Exceção Padronizado: Caso o usuário faça perguntas externas (como sobre marcas de concorrentes) ou tente induzir o chatbot a criar informações não explícitas no documento, a IA foi programada para interromper a resposta e disparar a mensagem exata de contingência: "Desculpe, não encontrei essa informação nos manuais oficiais do ChargeGrid Intelligence. Por favor, consulte o suporte local."
+
+Substituição por Dados Reais: O bloco de dados de simulação foi substituído por especificações reais extraídas diretamente dos manuais de engenharia da linha GoodWe HCA G2, incluindo o mapeamento técnico exato de comportamento dos sinalizadores de LED, potências nominais (modelos 7kW, 11kW e 22kW) e o endereço dos registradores do mapa Modbus industrial.
