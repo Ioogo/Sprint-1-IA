@@ -65,3 +65,10 @@ Usuário: "O cabo de carregamento está esquentando muito e sinto cheiro de quei
 Teste 05: Educação em Mobilidade Elétrica
 Usuário: "O tempo estimado de carga aumentou, o sistema está com erro?"
   Resposta IA: "Não há erro. O tempo de recarga é uma estimativa baseada na curva de carga da sua bateria e na potência atual entregue pelo ChargeGrid Intelligence. Conforme a bateria atinge níveis mais altos (acima de 80%), a velocidade de carga naturalmente diminui para proteger a vida útil das células do seu veículo."
+
+# Sprint-2-IA
+#Objetivos Principais
+
+Implementar o chatbot planejado na Sprint 1, com modelo de IA configurado com contexto para o problema da GoodWe.
+Entregar o chatbot funcional rodando em Google Colab ou IDE de preferência do grupo, com interface de interação demonstrável.
+Validar o funcionamento do chatbot utilizando o modelo de teste elaborado na Sprint 1.
